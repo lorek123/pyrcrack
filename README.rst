@@ -22,7 +22,8 @@ commands and way to read its output / control its execution
 Features
 --------
 
-* Everything works as a context manager
+This library currently implements wrappers to:
+
 * Aircrack
 * Wesside
 * Aireplay
@@ -30,11 +31,29 @@ Features
 * Airmon
 * Airdecap
 
+Wich are able to:
+
+* Handle arguments
+* Handle process restart (and continue reading on the new output transparently)
+* Act as context managers
+* Cleanup on exit
+
+All of them are context managers, so you can use them as:
+
+::
+
+    with AircrackProgram(options) as f:
+        do_something_with(f)
+        or_maybe(f.result)
+
+
+Right now, result property returns what I've needed / considered neccesary
+You can override it as will, if you need to do something different with it.
 
 Usage
 -----
 
-Have a look at the :ref:`modindex`
+Have a look at the documentation, preferably the "Module Index"
 
 
 Credits
