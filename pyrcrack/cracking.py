@@ -154,11 +154,6 @@ class Aircrack(Air):
                            stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
         os.system('stty sane')
 
-    def start_remote(self):
-        """
-            Start cracking on remote host.
-        """
-        pass
 
 class Wesside(Air):
     """
