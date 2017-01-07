@@ -46,6 +46,11 @@ class Airodump(Air):
     _aps = []
     _clients = []
     _stop = False
+    # WPS Stuff
+    _washfile = ""
+    _washinterface = ""
+    _wps_interface = ""
+    _wps_proc = ""
     _allowed_arguments = (
         ('ivs', False),
         ('gpsd', False),
@@ -67,7 +72,9 @@ class Airodump(Air):
         ('essid', False),
         ('output_format', False),
         ('write', False),
-        ('essid_regex', False))
+        ('essid_regex', False),
+        ('wps', False),
+    )
 
     def __init__(self, interface=False, **kwargs):
         self.interface = interface
@@ -92,7 +99,11 @@ class Airodump(Air):
             'LANIP',
             'IDlength',
             'ESSID',
-            'Key']
+            'Key',
+            'WPS', # WPS availiblity 
+            'WPS Locked'
+            'WPS PIN'
+        ]
 
         c_keys = [
             'Station MAC',
@@ -113,7 +124,8 @@ class Airodump(Air):
 
             for client in self.clients:
                 if client[0] == bssid:
-                    aps[bssid]['clients'].append(dict(zip(c_keys, client)))
+                    client_dict = dict(zip(c_keys, client))
+                    aps[bssid]['clients'][client_dict['Station MAC']] = client_dict
         return aps
 
     @property
@@ -149,7 +161,7 @@ class Airodump(Air):
             psutil sends an argument (that we don't actually need...)
             interface defaults to monitor interface 0 as started by Airmon
         """
-        if not self._stop:
+        if not self._stop:     
             self._current_execution += 1
             flags = self.flags
             if '--write' not in flags:
@@ -165,6 +177,10 @@ class Airodump(Air):
         time.sleep(5)
         watcher = threading.Thread(target=self.watch_process)
         watcher.start()
+
+    def start_wash(self):
+        if not self._stop_wps:
+            line = ["wash -P" ]
 
     def stop(self):
         """
@@ -201,5 +217,21 @@ class Airodump(Air):
             """
             return [[a.strip() for a in row] for row in reader if row]
 
-        self._aps = clean_rows(csv.reader(StringIO('\n'.join(aps))))
+        aps = clean_rows(csv.reader(StringIO('\n'.join(aps))))
+        wps_aps = get_networks_wps()
+        for i, ap in enumarete(aps):
+            for wps_ap in wps_aps:
+                if wps_ap[0] == aps[i][0]:
+                    aps[i] = ap.append(True) # WPS Enabled
+                    aps[i] = ap.append(wps_ap[4]) # WPS Version
+                    aps[i] = ap.append(wps_ap[5]) # WPS Locked
+
+        self._aps = aps
         self._clients = clean_rows(csv.reader(StringIO('\n'.join(clis))))
+
+    def get_networks_wps(self):
+        aps = []
+        with open(self._washfile) as washf:
+            for line in wash.readlines():
+                aps.append(keys,line.split(str="|", num=5))
+        return aps
