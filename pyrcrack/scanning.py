@@ -67,7 +67,8 @@ class Airodump(Air):
         ('essid', False),
         ('output_format', False),
         ('write', False),
-        ('essid_regex', False))
+        ('essid_regex', False),
+        ('wps',False))
 
     def __init__(self, interface=False, **kwargs):
         self.interface = interface
