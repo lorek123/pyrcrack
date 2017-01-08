@@ -16,6 +16,7 @@
 """
 import os
 import re
+import tempfile
 from . import Air, WrongArgument
 from subprocess import Popen, DEVNULL, PIPE
 from contextlib import suppress
@@ -126,7 +127,7 @@ class Aircrack(Air):
     )
 
     _allowed_attacks = (
-        'wpa', 'wep'
+        'wpa', 'wep',
     )
 
     def __init__(self, attack=False, file_=False, **kwargs):
@@ -241,3 +242,106 @@ class Wesside(Air):
             data = self._proc.communicate().decode()
             return re.match("KEY=\((.*)\)", data).groups()[0]
         return False
+
+class Reaver(object):
+    """docstring for Reaver"""
+    def __init__(self, iface, bssid, channel=False):
+        self._iface = iface
+        self._bssid = bssid
+        self._channel = channel
+        self._filename = tempfile.mkstemp()
+
+    _seek = 0
+    _failures = 0
+
+    def start():
+        self._proc = Popen([
+            "reaver",
+            "-i", self._iface,
+            "-c", self._channel,
+            "-b", self._bssid,
+            "--no-nacks",
+            "-L", "-w", "-v", "-K 1"
+            "-o", _filename],
+                    stdout=DEVNULL, stderr=DEVNULL)
+
+    def stop():
+        self._proc.kill()
+        os.remove(self._filename)
+    def check_progress():
+        if self._failures>=10:
+            self.stop()
+            return {"status":"attack failed"} 
+        with open(self._filename) as reaverlog:
+            reaverlog.seek(self._seek)
+            content = reaverlog.read()
+            self._seek = reaverlog.tell()
+            if content.find("[!] WARNING: 10 failed connections in a row"):
+                self._failures+=1
+                return {"status":"failed " + str(self._failures) + "times"}
+            if content.find("[!] WPS transaction failed (code: 0x04), re-trying last pin")
+                self._failures+=1
+                return {"status":"failed " + str(self._failures) + "times"}
+            if content.find("[+] Estimated Remaining time:"):
+                return {"status":"in progress"}
+            if reaverproc.poll():
+                if content.find("[+] WPA PSK: "):
+                    key = content.split()[3].strip("'")
+                    if content.find("[+] WPS PIN: "):
+                        wps = content.split()[3].strip("'")
+                        self.stop()
+                        return {"status":"success",
+                                "key":key,
+                                "wps":wps}
+
+### NEEDS IMPLEMENTATION OF AIRODUMP PCAP DUMP!!!!!
+class WPAcrack(object):
+    def __init__(self, iface, essid, bssid, channel=False):
+        self._iface = iface
+        self._bssid = bssid
+        self._essid = essid
+        self._channel = channel
+        self._filename = tempfile.mkstemp()
+
+    def has_handshake(capfile):
+    """
+        Uses pyrit to check for a handshake.
+        Returns "True" if handshake is found, false otherwise.
+    """
+    # Call pyrit to "Analyze" the cap file's handshakes.
+        cmd = ['pyrit', '-r', capfile, 'analyze']
+        proc = run(cmd, stdout=PIPE, stderr=DEVNULL)
+        hit_essid = False
+        for line in proc.stdout.decode("utf-8").split("\n"):
+            # Iterate over every line of output by Pyrit
+            if line == '' or line is None:
+                continue
+            if line.find("AccessPoint") != -1:
+                hit_essid = (line.find("('" + self._ssid + "')") != -1) and \
+                            (line.lower().find(self._bssid.lower()) != -1)
+            else:
+                if hit_essid and (line.find(', good, ') != -1 or
+                                  line.find(', workable, ') != -1):
+                    return True
+        return False
+
+
+    def strip_handshake(capfile):
+    """
+        Uses Tshark or Pyrit to strip all non-handshake packets
+        from a .cap file.
+        File in location 'capfile' will be overwritten!
+    """
+        output_file = capfile + "temp"
+        cmd = ['pyrit',
+               '-r', capfile,
+               '-o', output_file,
+               'strip']
+        run(cmd, stdout=DEVNULL, stderr=DEVNULL)
+        rename(capfile + '.temp', output_file)
+
+    def start():
+
+
+        aircrack = Aircrack('wpa', self._filename)
+        aircrack.start()

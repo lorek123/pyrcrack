@@ -93,7 +93,9 @@ class Airodump(Air):
             'LANIP',
             'IDlength',
             'ESSID',
-            'Key']
+            'WPS',
+            'Key'
+            ]
 
         c_keys = [
             'Station MAC',
