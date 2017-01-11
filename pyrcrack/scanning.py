@@ -7,6 +7,7 @@ import os
 import csv
 import time
 import psutil
+import tempfile
 import threading
 from . import Air
 from io import StringIO
@@ -152,13 +153,14 @@ class Airodump(Air):
             psutil sends an argument (that we don't actually need...)
             interface defaults to monitor interface 0 as started by Airmon
         """
+        
         if not self._stop:
             self._current_execution += 1
             flags = self.flags
             if '--write' not in flags:
                 flags.extend(['--write', self.writepath])
             if '--output-format' not in flags:
-                flags.extend(['--output-format', 'csv'])
+                flags.extend(['--output-format', 'csv,pcap'])
             line = ["airodump-ng"] + flags + self.arguments + [self.interface]
             self._proc = Popen(line, bufsize=0,
                                env={'PATH': os.environ['PATH']},
@@ -169,12 +171,6 @@ class Airodump(Air):
         watcher = threading.Thread(target=self.watch_process)
         watcher.start()
 
-    def stop(self):
-        """
-            Stop proc.
-        """
-        self._stop = True
-        return self._proc.kill()
 
     def update_results(self):
         """
@@ -206,3 +202,50 @@ class Airodump(Air):
 
         self._aps = clean_rows(csv.reader(StringIO('\n'.join(aps))))
         self._clients = clean_rows(csv.reader(StringIO('\n'.join(clis))))
+
+class Wash(Air):
+
+    def start(self, iface="wlan0mon"):
+        """
+            Start process.
+            psutil sends an argument (that we don't actually need...)
+            interface defaults to monitor interface 0 as started by Airmon
+        """
+        self._directory = tempfile.TemporaryDirectory()
+        self._writepath = os.path.join(self._directory.name, "4") 
+        self._proc = Popen(["wash", "-i", iface, "-P", "-o", self._writepath ])
+
+        time.sleep(5)
+        watcher = threading.Thread(target=self.watch_process)
+        watcher.start()
+
+    def stop(self):
+        """
+            Stop proc.
+        """
+
+        self._stop = True
+        result = self._proc.kill()
+        self._directory.cleanup()
+        return result
+
+    def update_results(self):
+        """
+            Updates self.clients and self.aps
+        """
+        aps = []
+        with open(self._writepath) as fileo:
+            aps = csv.reader(fileo,delimiter='|')
+
+        keys = 'BSSID','channel', 'power', 'WPS Blocked', 'SSID'
+
+        return [dict(zip(keys,ap)) for ap in aps]
+
+    def watch_process(self):
+        """
+            Watcher thread.
+            This one relaunches airodump eatch time it dies until
+            we call stop()
+        """
+        psutil.wait_procs([psutil.Process(self._proc.pid)],
+                          callback=self.start)

@@ -87,10 +87,10 @@ class Air:
             Where to write things to.
         """
         if not self._writepath:
-            tmpdir = tempfile.mkdtemp()
+            self._tempdir = tempfile.TemporaryDirectory()
             pid = os.getpid()
             name = "{}_{}".format("airodump", pid)
-            self._writepath = os.path.join(tmpdir, name)
+            self._writepath = os.path.join(self._tempdir, name)
         return self._writepath
 
     @property
@@ -113,7 +113,9 @@ class Air:
             Stop proc.
         """
         self._stop = True
-        return self._proc.kill()
+        result = self._proc.kill()
+        self._tempdir.cleanup()
+        return result
 
     def __enter__(self, *args, **kwargs):
         self.start(*args, **kwargs)
