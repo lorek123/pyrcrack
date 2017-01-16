@@ -233,13 +233,10 @@ class Wash(Air):
         """
             Updates self.clients and self.aps
         """
-        aps = []
         with open(self._writepath) as fileo:
             aps = csv.reader(fileo,delimiter='|')
-
-        keys = 'BSSID','channel', 'power', 'WPS Blocked', 'SSID'
-
-        return [dict(zip(keys,ap)) for ap in aps]
+            keys = 'BSSID','channel', 'power', 'WPS Blocked', 'ESSID'
+            return [dict(zip(keys,ap)) for ap in aps]
 
     def watch_process(self):
         """

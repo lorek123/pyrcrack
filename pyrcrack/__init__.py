@@ -90,7 +90,7 @@ class Air:
             self._tempdir = tempfile.TemporaryDirectory()
             pid = os.getpid()
             name = "{}_{}".format("airodump", pid)
-            self._writepath = os.path.join(self._tempdir, name)
+            self._writepath = os.path.join(self._tempdir.name, name)
         return self._writepath
 
     @property
