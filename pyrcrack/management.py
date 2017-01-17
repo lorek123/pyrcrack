@@ -36,17 +36,17 @@ class Airmon(Air):
     """
 
     def __init__(self, interface):
-        self.interface = interface  #: Wireless interface
+        self.interface = interface #: Wireless interface
+        self.realinterface = interface  
         super(self.__class__, self).__init__()
 
     def _do_action(self, what):
         """
-            Execute airmon-ng with MON_PREFIX and PATH set.
+            Execute airmon-ng.
             start, stop and check relies on this.
         """
-        env = {'PATH': PATH, 'MON_PREFIX': 'smoothie'}
         return subprocess.check_output(["airmon-ng", what,
-                                        self.interface], env=env)
+                                        self.interface])
 
     def start(self):
         """
@@ -62,6 +62,8 @@ class Airmon(Air):
 
         for asg in re.finditer(r'(.*) on (.*)\)', ret.decode()):
             self.interface = asg.group(2)
+            if self.interface.startswith('['): # system added physical interface, we need to strip this
+                *_, self.interface = self.interface.split("]")
             return self.interface
 
     def stop(self):
