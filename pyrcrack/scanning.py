@@ -217,7 +217,7 @@ class Wash(Air):
         """
         self._directory = tempfile.TemporaryDirectory()
         self._writepath = os.path.join(self._directory.name, "4") 
-        self._proc = Popen(["wash", "-i", iface, "-P", "-o", self._writepath ])
+        self._proc = Popen(["wash", "-i", self.interface, "-P", "-o", self._writepath ])
 
         time.sleep(5)
         watcher = threading.Thread(target=self.watch_process)
