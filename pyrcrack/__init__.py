@@ -121,6 +121,5 @@ class Air:
         self.start(*args, **kwargs)
         return self
 
-    def __exit__(self, *args, **kwargs):
+    def __exit__(self, exc_type, exc, tb):
         self.stop()
-        return self

@@ -205,7 +205,7 @@ class Airodump(Air):
 
 class Wash(Air):
 
-    def __init__(self, iface="wlan0mon", **kwargs):
+    def __init__(self, interface="wlan0mon", **kwargs):
         self.interface = interface
         super(self.__class__, self).__init__(**kwargs)
 
