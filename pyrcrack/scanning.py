@@ -205,7 +205,11 @@ class Airodump(Air):
 
 class Wash(Air):
 
-    def start(self, iface="wlan0mon"):
+    def __init__(self, iface="wlan0mon", **kwargs):
+        self.interface = interface
+        super(self.__class__, self).__init__(**kwargs)
+
+    def start(self):
         """
             Start process.
             psutil sends an argument (that we don't actually need...)
