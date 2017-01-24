@@ -231,6 +231,7 @@ class Wash(Air):
         self._stop = True
         result = self._proc.kill()
         self._directory.cleanup()
+        self._writepath = ''
         return result
 
     def update_results(self):

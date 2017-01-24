@@ -163,8 +163,8 @@ class Aircrack(Air):
         """
             Stop proc.
         """
-
         self._directory.cleanup()
+        self._writepath = ''
         return True
 
 class Wesside(Air):
