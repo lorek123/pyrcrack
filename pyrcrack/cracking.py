@@ -132,7 +132,7 @@ class Aircrack(Air):
 
     def __init__(self, attack=False, file_=False, **kwargs):
         self.file_ = file_
-
+        self._program = "key"
         if attack not in self._allowed_attacks:
             raise WrongArgument
 
@@ -142,19 +142,30 @@ class Aircrack(Air):
             extra = getattr(self, "_allowed_arguments_{}".format(attack))
         self._allowed_arguments = self._allowed_arguments + \
             extra
-        super(self.__class__, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def start(self):
         """
             Start process.
         """
         params = self.flags + self.arguments
+        if self.attack == 'wpa':
+            params.append('-l', self.tempfile)
         line = ["aircrack-ng"] + params + [self.file_]
-        self._proc = Popen(line, bufsize=0,
+        self._proc = run(line, bufsize=0,
                            env={'PATH': os.environ['PATH']},
                            stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
         os.system('stty sane')
+        with open(self.tempfile) as key:
+            return key.read()
 
+    def stop(self):
+        """
+            Stop proc.
+        """
+
+        self._directory.cleanup()
+        return True
 
 class Wesside(Air):
     """

@@ -58,7 +58,7 @@ class Aireplay(Air):
     )
 
     _allowed_attacks = (
-        'deauth', 'fakeauth', 'interactive', 'arpreplay',
+        'deauth 0', 'fakeauth', 'interactive', 'arpreplay',
         'chopchop', 'fragment', 'caffe_latte', 'cfrag', 'migmode')
 
     def __init__(self, attack=False, interface=False, **kwargs):
@@ -74,7 +74,7 @@ class Aireplay(Air):
         self._allowed_arguments = self._allowed_arguments + \
             extra + (attack, False),
         kwargs[attack] = True
-        super(self.__class__, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def scan(self):
         """

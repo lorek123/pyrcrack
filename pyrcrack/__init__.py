@@ -48,6 +48,7 @@ class Air:
     _current_execution = 0
     _proc = False
     _exec_args = {}
+    _program = "airodump"
 
     def __init__(self, **kwargs):
         """
@@ -89,7 +90,7 @@ class Air:
         if not self._writepath:
             self._tempdir = tempfile.TemporaryDirectory()
             pid = os.getpid()
-            name = "{}_{}".format("airodump", pid)
+            name = "{}_{}".format(self._program, pid)
             self._writepath = os.path.join(self._tempdir.name, name)
         return self._writepath
 
@@ -107,6 +108,14 @@ class Air:
             Return current execution's csv location
         """
         return "{}-{}.csv".format(self.writepath, self.current_execution)
+
+    @property
+    def curr_pcap(self):
+        """
+            Return current execution's csv location
+        """
+        return "{}-{}.pcap".format(self.writepath, self.current_execution)
+
 
     def stop(self):
         """

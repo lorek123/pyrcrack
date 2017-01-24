@@ -35,9 +35,10 @@ class Airmon(Air):
 
     """
 
-    def __init__(self, interface):
+    def __init__(self, interface, channel=None):
         self.interface = interface #: Wireless interface
-        self.realinterface = interface  
+        self.realinterface = interface
+        self.channel=channel
         super(self.__class__, self).__init__()
 
     def _do_action(self, what):
@@ -45,9 +46,12 @@ class Airmon(Air):
             Execute airmon-ng.
             start, stop and check relies on this.
         """
-        return subprocess.check_output(["airmon-ng", what,
+        if what == "start":
+            return subprocess.check_output(["airmon-ng", what,
+                                        self.interface, self.channel])
+        else:
+            return subprocess.check_output(["airmon-ng", what,
                                         self.interface])
-
     def start(self):
         """
             Executes
