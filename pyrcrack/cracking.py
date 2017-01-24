@@ -165,7 +165,7 @@ class Aircrack(Air):
         """
             Stop proc.
         """
-        self._directory.cleanup()
+        #self._directory.cleanup()
         self._writepath = ''
         return True
 
