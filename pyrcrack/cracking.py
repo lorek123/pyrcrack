@@ -315,10 +315,10 @@ class WPAcrack(object):
         self._filename = tempfile.mkstemp()
 
     def has_handshake(capfile):
-    """
-        Uses pyrit to check for a handshake.
-        Returns "True" if handshake is found, false otherwise.
-    """
+        """
+            Uses pyrit to check for a handshake.
+            Returns "True" if handshake is found, false otherwise.
+        """
         cmd = ['pyrit', '-r', capfile, 'analyze'] #Call pyrit to "Analyze" the cap file's handshakes.
         proc = run(cmd, stdout=PIPE, stderr=DEVNULL)
         hit_essid = False
