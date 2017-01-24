@@ -7,6 +7,7 @@ import os
 import time
 import psutil
 import threading
+import tempfile
 from . import Air, WrongArgument
 from subprocess import Popen, DEVNULL
 from contextlib import suppress
