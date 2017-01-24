@@ -319,8 +319,7 @@ class WPAcrack(object):
         Uses pyrit to check for a handshake.
         Returns "True" if handshake is found, false otherwise.
     """
-    # Call pyrit to "Analyze" the cap file's handshakes.
-        cmd = ['pyrit', '-r', capfile, 'analyze']
+        cmd = ['pyrit', '-r', capfile, 'analyze'] #Call pyrit to "Analyze" the cap file's handshakes.
         proc = run(cmd, stdout=PIPE, stderr=DEVNULL)
         hit_essid = False
         for line in proc.stdout.decode("utf-8").split("\n"):
@@ -352,7 +351,5 @@ class WPAcrack(object):
         rename(capfile + '.temp', output_file)
 
     def start():
-
-
         aircrack = Aircrack('wpa', self._filename)
         aircrack.start()
