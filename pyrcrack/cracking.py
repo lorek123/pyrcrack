@@ -18,7 +18,7 @@ import os
 import re
 import tempfile
 from . import Air, WrongArgument
-from subprocess import Popen, DEVNULL, PIPE
+from subprocess import run, Popen, DEVNULL, PIPE
 from contextlib import suppress
 
 
