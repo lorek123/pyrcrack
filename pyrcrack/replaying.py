@@ -18,7 +18,6 @@ class Aireplay(Air):
     """
 
     _stop = False
-    _tempdir = 
     _allowed_arguments = (
         ('b', False),
         ('d', False),
