@@ -69,11 +69,13 @@ class Airodump(Air):
         ('output_format', False),
         ('write', False),
         ('essid_regex', False),
-        ('wps',False))
+        ('wps',False),
+        ('channel',False))
 
-    def __init__(self, interface=False, **kwargs):
+    def __init__(self, interface=False,channel=False **kwargs):
         self.interface = interface
-        super(self.__class__, self).__init__(**kwargs)
+        self.channel = channel
+        super().__init__(**kwargs)
 
     @property
     def tree(self):
@@ -161,6 +163,8 @@ class Airodump(Air):
                 flags.extend(['--write', self.writepath])
             if '--output-format' not in flags:
                 flags.extend(['--output-format', 'csv,pcap'])
+            if self.channel:
+                flags.extend(['--channel', self.channel])
             line = ["airodump-ng"] + flags + self.arguments + [self.interface]
             self._proc = Popen(line, bufsize=0,
                                env={'PATH': os.environ['PATH']},
