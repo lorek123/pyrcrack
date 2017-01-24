@@ -57,7 +57,7 @@ class Air:
             to the action...
         """
         for arg in kwargs:
-            if arg not in dict(self._allowed_arguments):
+            if arg not in self._allowed_arguments:
                 raise WrongArgument()
         self._exec_args = kwargs.items()
 
