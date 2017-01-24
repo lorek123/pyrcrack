@@ -46,7 +46,7 @@ class Airmon(Air):
             Execute airmon-ng.
             start, stop and check relies on this.
         """
-        if what == "start":
+        if what == "start" and self.channel not None:
             return subprocess.check_output(["airmon-ng", what,
                                         self.interface, self.channel])
         else:
