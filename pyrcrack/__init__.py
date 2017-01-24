@@ -56,9 +56,6 @@ class Air:
             The arguments must be implicit
             to the action...
         """
-        for arg in kwargs:
-            if arg not in self._allowed_arguments:
-                raise WrongArgument()
         self._exec_args = kwargs.items()
 
     @property
