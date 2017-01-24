@@ -111,7 +111,7 @@ class Air:
         """
             Return current execution's csv location
         """
-        return "{}-{}.pcap".format(self.writepath, self.current_execution)
+        return "{}-{}.cap".format(self.writepath, self.current_execution)
 
 
     def stop(self):
