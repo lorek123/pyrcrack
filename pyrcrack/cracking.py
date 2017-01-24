@@ -337,11 +337,11 @@ class WPAcrack(object):
 
 
     def strip_handshake(capfile):
-    """
-        Uses Tshark or Pyrit to strip all non-handshake packets
-        from a .cap file.
-        File in location 'capfile' will be overwritten!
-    """
+        """
+            Uses Tshark or Pyrit to strip all non-handshake packets
+            from a .cap file.
+            File in location 'capfile' will be overwritten!
+        """
         output_file = capfile + "temp"
         cmd = ['pyrit',
                '-r', capfile,
