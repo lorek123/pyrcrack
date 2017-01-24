@@ -72,7 +72,7 @@ class Airodump(Air):
         ('wps',False),
         ('channel',False))
 
-    def __init__(self, interface=False,channel=False **kwargs):
+    def __init__(self, interface=False,channel=False, **kwargs):
         self.interface = interface
         self.channel = channel
         super().__init__(**kwargs)
