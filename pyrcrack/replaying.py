@@ -18,6 +18,7 @@ class Aireplay(Air):
     """
 
     _stop = False
+    _tempdir = 
     _allowed_arguments = (
         ('b', False),
         ('d', False),
@@ -109,7 +110,7 @@ class Aireplay(Air):
                                env={'PATH': os.environ['PATH']},
                                stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
             os.system('stty sane')
-
+        self._tempdir = tempfile.TemporaryDirectory() # We do what we must, becaus we can
         time.sleep(5)
         watcher = threading.Thread(target=self.watch_process)
         watcher.start()
