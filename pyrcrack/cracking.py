@@ -85,6 +85,7 @@ class Aircrack(Air):
 
      """
 
+    tmpfile = tempfile.TemporaryDirectory()
     _stop = False
     _allowed_arguments = (
         ('a', False),
@@ -148,15 +149,16 @@ class Aircrack(Air):
         """
             Start process.
         """
+        tmpfile = os.join(tempfile.TemporaryDirectory().name, 'key')
         params = self.flags + self.arguments
         if self.attack == 'wpa':
-            params.append('-l', self.tempfile)
+            params.append('-l', tmpfile)
         line = ["aircrack-ng"] + params + [self.file_]
         self._proc = run(line, bufsize=0,
                            env={'PATH': os.environ['PATH']},
                            stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
         os.system('stty sane')
-        with open(self.tempfile) as key:
+        with open(tmpfile) as key:
             return key.read()
 
     def stop(self):
