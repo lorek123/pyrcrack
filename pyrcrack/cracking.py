@@ -290,7 +290,7 @@ class Reaver(object):
             if content.find("[!] WARNING: 10 failed connections in a row"):
                 self._failures+=1
                 return {"status":"failed " + str(self._failures) + "times"}
-            if content.find("[!] WPS transaction failed (code: 0x04), re-trying last pin")
+            if content.find("[!] WPS transaction failed (code: 0x04), re-trying last pin"):
                 self._failures+=1
                 return {"status":"failed " + str(self._failures) + "times"}
             if content.find("[+] Estimated Remaining time:"):
