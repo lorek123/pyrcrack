@@ -4,7 +4,7 @@ import re
 import os
 import subprocess
 from contextlib import suppress
-from . import Air, PATH, WrongArgument
+from . import Air, WrongArgument
 from subprocess import DEVNULL, Popen
 
 
@@ -36,10 +36,10 @@ class Airmon(Air):
     """
 
     def __init__(self, interface, channel=None):
-        self.interface = interface #: Wireless interface
+        self.interface = interface  #: Wireless interface
         self.realinterface = interface
-        self.channel=channel
-        super(self.__class__, self).__init__()
+        self.channel = channel
+        super().__init__()
 
     def _do_action(self, what):
         """
@@ -48,10 +48,11 @@ class Airmon(Air):
         """
         if self.channel:
             return subprocess.check_output(["airmon-ng", what,
-                                        self.interface, self.channel])
+                                            self.interface, self.channel])
         else:
             return subprocess.check_output(["airmon-ng", what,
-                                        self.interface])
+                                            self.interface])
+
     def start(self):
         """
             Executes
@@ -66,7 +67,7 @@ class Airmon(Air):
 
         for asg in re.finditer(r'(.*) on (.*)\)', ret.decode()):
             self.interface = asg.group(2)
-            if self.interface.startswith('['): # system added physical interface, we need to strip this
+            if self.interface.startswith('['):
                 *_, self.interface = self.interface.split("]")
             return self.interface
 

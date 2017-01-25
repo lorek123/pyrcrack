@@ -155,8 +155,8 @@ class Aircrack(Air):
             params.extend(('-l', tmpfile))
         line = ["aircrack-ng"] + params + [self.file_]
         self._proc = run(line, bufsize=0,
-                           env={'PATH': os.environ['PATH']},
-                           stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
+                         env={'PATH': os.environ['PATH']},
+                         stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
         os.system('stty sane')
         with open(tmpfile) as key:
             return key.read()
@@ -165,9 +165,9 @@ class Aircrack(Air):
         """
             Stop proc.
         """
-        #self._directory.cleanup()
         self._writepath = ''
         return True
+
 
 class Wesside(Air):
     """
@@ -256,8 +256,10 @@ class Wesside(Air):
             return re.match("KEY=\((.*)\)", data).groups()[0]
         return False
 
+
 class Reaver(object):
     """docstring for Reaver"""
+
     def __init__(self, iface, bssid, channel=False):
         self._iface = iface
         self._bssid = bssid
@@ -281,36 +283,40 @@ class Reaver(object):
     def stop():
         self._proc.kill()
         os.remove(self._filename)
+
     def check_progress():
-        if self._failures>=10:
+        if self._failures >= 10:
             self.stop()
-            return {"status":"attack failed"} 
+            return {"status": "attack failed"}
         with open(self._filename) as reaverlog:
             reaverlog.seek(self._seek)
             content = reaverlog.read()
             self._seek = reaverlog.tell()
             if content.find("[!] WARNING: 10 failed connections in a row"):
                 self._failures+=1
-                return {"status":"failed " + str(self._failures) + "times"}
+                return {"status": "failed " + str(self._failures) + "times"}
             if content.find("[!] WPS transaction failed (code: 0x04), re-trying last pin"):
                 self._failures+=1
-                return {"status":"failed " + str(self._failures) + "times"}
+                return {"status": "failed " + str(self._failures) + "times"}
             if content.find("[+] Estimated Remaining time:"):
-                return {"status":"in progress"}
+                return {"status": "in progress"}
             if reaverproc.poll():
                 if content.find("[+] WPA PSK: "):
                     key = content.split()[3].strip("'")
                     if content.find("[+] WPS PIN: "):
                         wps = content.split()[3].strip("'")
                         self.stop()
-                        return {"status":"success",
-                                "key":key,
-                                "wps":wps}
+                        return {"status": "success",
+                                "key": key,
+                                "wps": wps}
+
 
 class mdk3(Air):
     """docstring for mdk3"""
-    def __init__(self, bssid):
-        self.bssid = bssid
+
+    def __init__(self, bssid, iface):
+        self._bssid = bssid
+        self._iface = iface
 
     def start():
         self._proc = Popen([
@@ -318,7 +324,7 @@ class mdk3(Air):
             self._iface,
             "a",
             "-a", self._bssid,
-            "-m"]
+            "-m"],
             stdout=PIPE, stderr=DEVNULL)
 
     def stop():
@@ -335,5 +341,3 @@ class mdk3(Air):
             return "success"
         else:
             return "progress"
-
-        
