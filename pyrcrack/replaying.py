@@ -59,7 +59,7 @@ class Aireplay(Air):
     )
 
     _allowed_attacks = (
-        'deauth 0', 'fakeauth', 'interactive', 'arpreplay',
+        '--deauth 0', 'fakeauth', 'interactive', 'arpreplay',
         'chopchop', 'fragment', 'caffe_latte', 'cfrag', 'migmode')
 
     def __init__(self, attack=False, interface=False, **kwargs):

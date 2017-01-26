@@ -277,16 +277,16 @@ class Reaver(object):
             "-b", self._bssid,
             "--no-nacks",
             "-L", "-w", "-v", "-K 1"
-            "-o", _filename],
-                    stdout=DEVNULL, stderr=DEVNULL)
+            "-o", self._filename],
+            stdout=DEVNULL, stderr=DEVNULL)
 
     def stop():
         self._proc.kill()
         os.remove(self._filename)
 
+    @property
     def check_progress():
         if self._failures >= 10:
-            self.stop()
             return {"status": "attack failed"}
         with open(self._filename) as reaverlog:
             reaverlog.seek(self._seek)
@@ -299,19 +299,18 @@ class Reaver(object):
                 self._failures+=1
                 return {"status": "failed " + str(self._failures) + "times"}
             if content.find("[+] Estimated Remaining time:"):
-                return {"status": "in progress"}
-            if reaverproc.poll():
+                return {"status": "progress"}
+            if self._proc.poll():
                 if content.find("[+] WPA PSK: "):
                     key = content.split()[3].strip("'")
                     if content.find("[+] WPS PIN: "):
                         wps = content.split()[3].strip("'")
-                        self.stop()
                         return {"status": "success",
                                 "key": key,
                                 "wps": wps}
 
 
-class mdk3(Air):
+class Mdk3(Air):
     """docstring for mdk3"""
 
     def __init__(self, bssid, iface):
