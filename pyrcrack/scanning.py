@@ -69,10 +69,10 @@ class Airodump(Air):
         ('output_format', False),
         ('write', False),
         ('essid_regex', False),
-        ('wps',False),
-        ('channel',False))
+        ('wps', False),
+        ('channel', False))
 
-    def __init__(self, interface=False,channel=False, **kwargs):
+    def __init__(self, interface=False, channel=False, **kwargs):
         self.interface = interface
         self.channel = channel
         super().__init__(**kwargs)
@@ -155,7 +155,7 @@ class Airodump(Air):
             psutil sends an argument (that we don't actually need...)
             interface defaults to monitor interface 0 as started by Airmon
         """
-        
+
         if not self._stop:
             self._current_execution += 1
             flags = self.flags
@@ -174,7 +174,6 @@ class Airodump(Air):
         time.sleep(5)
         watcher = threading.Thread(target=self.watch_process)
         watcher.start()
-
 
     def update_results(self):
         """
@@ -207,6 +206,7 @@ class Airodump(Air):
         self._aps = clean_rows(csv.reader(StringIO('\n'.join(aps))))
         self._clients = clean_rows(csv.reader(StringIO('\n'.join(clis))))
 
+
 class Wash(Air):
 
     def __init__(self, interface="wlan0mon", **kwargs):
@@ -220,8 +220,8 @@ class Wash(Air):
             interface defaults to monitor interface 0 as started by Airmon
         """
         self._directory = tempfile.TemporaryDirectory()
-        self._writepath = os.path.join(self._directory.name, "4") 
-        self._proc = Popen(["wash", "-i", self.interface, "-P", "-o", self._writepath ])
+        self._writepath = os.path.join(self._directory.name, "4")
+        self._proc = Popen(["wash", "-i", self.interface, "-P", "-o", self._writepath])
 
         time.sleep(5)
         watcher = threading.Thread(target=self.watch_process)
@@ -243,9 +243,9 @@ class Wash(Air):
             Updates self.clients and self.aps
         """
         with open(self._writepath) as fileo:
-            aps = csv.reader(fileo,delimiter='|')
-            keys = 'BSSID','channel', 'power', 'WPS Blocked', 'ESSID'
-            return [dict(zip(keys,ap)) for ap in aps]
+            aps = csv.reader(fileo, delimiter='|')
+            keys = 'BSSID', 'channel', 'power', 'WPS Blocked', 'ESSID'
+            return [dict(zip(keys, ap)) for ap in aps]
 
     def watch_process(self):
         """

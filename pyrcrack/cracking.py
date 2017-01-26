@@ -269,7 +269,7 @@ class Reaver(object):
     _seek = 0
     _failures = 0
 
-    def start():
+    def start(self):
         self._proc = Popen([
             "reaver",
             "-i", self._iface,
@@ -280,12 +280,12 @@ class Reaver(object):
             "-o", self._filename],
             stdout=DEVNULL, stderr=DEVNULL)
 
-    def stop():
+    def stop(self):
         self._proc.kill()
         os.remove(self._filename)
 
     @property
-    def check_progress():
+    def check_progress(self):
         if self._failures >= 10:
             return {"status": "attack failed"}
         with open(self._filename) as reaverlog:
@@ -317,7 +317,7 @@ class Mdk3(Air):
         self._bssid = bssid
         self._iface = iface
 
-    def start():
+    def start(self):
         self._proc = Popen([
             "mdk3",
             self._iface,
@@ -326,11 +326,11 @@ class Mdk3(Air):
             "-m"],
             stdout=PIPE, stderr=DEVNULL)
 
-    def stop():
+    def stop(self):
         self._proc.kill()
 
     @property
-    def check_progress():
+    def check_progress(self):
         output, _ = self.proc.communicate()
         if output.count("seems to be INVULNERABLE!") > 10:
             self.stop()
