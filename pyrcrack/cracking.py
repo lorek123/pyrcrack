@@ -417,6 +417,8 @@ class Reaver(object):
 class Mdk3(Air):
     """docstring for mdk3"""
 
+    _counter = 0
+
     def __init__(self, bssid, iface):
         self._bssid = bssid
         self._iface = iface
@@ -436,9 +438,8 @@ class Mdk3(Air):
     @property
     def check_progress(self):
         output, _ = self._proc.communicate()
-        print("out:")
-        print(output)
-        if output.count("seems to be INVULNERABLE!") > 10:
+        self._counter += output.count("seems to be INVULNERABLE!")
+        if self._counter > 10:
             self.stop()
             return "failed"
         if output.find("got authentication frame: from wrong AP or failed authentication!"):
