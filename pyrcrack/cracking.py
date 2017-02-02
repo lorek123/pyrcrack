@@ -256,29 +256,133 @@ class Wesside(Air):
             return re.match("KEY=\((.*)\)", data).groups()[0]
         return False
 
+class Besside(Air):
+    """
+        Introduction
+        ------------
+
+        Wesside-ng is an auto-magic tool to obtain a WEP key
+        with as less interaction from the user as possible.
+
+        The only actual required option is the interface,
+        as if no interface specified, it'll try to crack any.
+
+        This is only for WEP networks and does not need anything
+        out of the ordinary
+
+        Usage example:
+
+        ::
+
+            Wesside('mon0', n="192.168.1.3", m="192.168.1.2",
+                    a="aa:bb:cc:dd:ee:ff", c=False, p=128, v="WLAN_FOO",
+                    t=10000, f=11)
+
+
+        Don't forget these are context managers, but also can be called
+        manually
+
+        ::
+
+            foo = Wesside('mon0', n="192.168.1.3", m="192.168.1.2",
+                          a="aa:bb:cc:dd:ee:ff", c=False, p=128,
+                          v="WLAN_FOO", t=10000, f=11)
+
+            foo.start()
+            time.sleep(1000)
+            print(_.result)
+            foo.stop()
+
+        ::
+
+            with Wesside('mon0', n="192.168.1.3", m="192.168.1.2",
+                          a="aa:bb:cc:dd:ee:ff", c=False, p=128,
+                          v="WLAN_FOO", t=10000, f=11):
+                time.sleep(1000)
+                print(_.result)
+
+
+
+    """
+
+    _stop = False
+    tempdir = tempfile.TemporaryDirectory()
+    _allowed_arguments = (
+        ('n', False),
+        ('m', False),
+        ('a', False),
+        ('c', False),
+        ('p', False),
+        ('v', False),
+        ('t', False),
+        ('f', False),
+    )
+
+    def __init__(self, interface, bssid, **kwargs):
+        self.interface = interface
+        self.bssid = bssid
+        super().__init__(**kwargs)
+
+    def start(self):
+        """
+            Start process.
+        """
+        params = ["-b", self.bssid, self.interface]
+        line = ["besside-ng"] + params
+        self._proc = Popen(line, bufsize=0,
+                           cwd=self.tempdir,
+                           stderr=DEVNULL, stdin=DEVNULL, stdout=PIPE)
+        os.system('stty sane')
+
+    @property
+    def result(self):
+        """
+            Searches for a key in wesside-ng's output to stdout.
+        """
+        with open(self.tempdir.name + "besside.log") as file:
+            lines = file.readlines()
+            if len(lines) < 2:
+                return False
+            else:
+                return lines[1].split("|")[1].strip()
+
+    def stop(self):
+        self._proc.kill()
+
 
 class Reaver(object):
     """docstring for Reaver"""
 
-    def __init__(self, iface, bssid, channel=False):
+    def __init__(self, iface, bssid, channel=False, pixie=False):
         self._iface = iface
         self._bssid = bssid
         self._channel = channel
         self._filename = tempfile.mkstemp()
-
+        self._pixie = pixie
     _seek = 0
     _failures = 0
 
     def start(self):
-        self._proc = Popen([
-            "reaver",
-            "-i", self._iface,
-            "-c", self._channel,
-            "-b", self._bssid,
-            "--no-nacks",
-            "-L", "-w", "-v", "-K 1"
-            "-o", self._filename],
-            stdout=DEVNULL, stderr=DEVNULL)
+        if self._pixie:
+            self._proc = Popen([
+                "reaver",
+                "-i", self._iface,
+                "-c", self._channel,
+                "-b", self._bssid,
+                "--no-nacks",
+                "-L", "-w", "-v", "-K 1",
+                "-o", self._filename],
+                stdout=DEVNULL, stderr=DEVNULL)
+        else:
+            self._proc = Popen([
+                "reaver",
+                "-i", self._iface,
+                "-c", self._channel,
+                "-b", self._bssid,
+                "--no-nacks",
+                "-L", "-w", "-v",
+                "-o", self._filename],
+                stdout=DEVNULL, stderr=DEVNULL)
 
     def stop(self):
         self._proc.kill()
@@ -293,10 +397,10 @@ class Reaver(object):
             content = reaverlog.read()
             self._seek = reaverlog.tell()
             if content.find("[!] WARNING: 10 failed connections in a row"):
-                self._failures+=1
+                self._failures += 1
                 return {"status": "failed " + str(self._failures) + "times"}
             if content.find("[!] WPS transaction failed (code: 0x04), re-trying last pin"):
-                self._failures+=1
+                self._failures += 1
                 return {"status": "failed " + str(self._failures) + "times"}
             if content.find("[+] Estimated Remaining time:"):
                 return {"status": "progress"}
