@@ -330,7 +330,7 @@ class Besside(Air):
         params = ["-b", self.bssid, self.interface]
         line = ["besside-ng"] + params
         self._proc = Popen(line, bufsize=0,
-                           cwd=self.tempdir,
+                           cwd=self.tempdir.name,
                            stderr=DEVNULL, stdin=DEVNULL, stdout=PIPE)
         os.system('stty sane')
 
