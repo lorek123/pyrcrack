@@ -306,7 +306,6 @@ class Besside(Air):
     """
 
     _stop = False
-    tempdir = tempfile.TemporaryDirectory()
     _allowed_arguments = (
         ('n', False),
         ('m', False),
@@ -327,6 +326,7 @@ class Besside(Air):
         """
             Start process.
         """
+        self.tempdir = tempfile.TemporaryDirectory()
         params = ["-b", self.bssid, self.interface]
         line = ["besside-ng"] + params
         self._proc = Popen(line, bufsize=0,
