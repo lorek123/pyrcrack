@@ -439,7 +439,7 @@ class Mdk3(Air):
 
     @property
     def check_progress(self):
-        output, _ = self._proc.communicate()
+        output = self._proc.stdout
         self._counter += output.count("seems to be INVULNERABLE!")
         if self._counter > 10:
             self.stop()
