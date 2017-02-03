@@ -440,11 +440,11 @@ class Mdk3(Air):
     @property
     def check_progress(self):
         output = self._proc.stdout.read()
-        self._counter += output.count("seems to be INVULNERABLE!")
+        self._counter += output.count(b"seems to be INVULNERABLE!")
         if self._counter > 10:
             self.stop()
             return "failed"
-        if output.find("got authentication frame: from wrong AP or failed authentication!"):
+        if output.find(b"got authentication frame: from wrong AP or failed authentication!"):
             self.stop()
             return "success"
         else:
