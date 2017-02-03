@@ -357,7 +357,7 @@ class Reaver(Air):
         self._iface = iface
         self._bssid = bssid
         self._channel = channel
-        self._filename = tempfile.mkstemp()
+        _, self._filename = tempfile.mkstemp()
         self._pixie = pixie
         super().__init__(**kwargs)
 
