@@ -233,7 +233,7 @@ class Wesside(Air):
 
     def __init__(self, interface=False, **kwargs):
         self.interface = interface
-        super(self.__class__, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def start(self):
         """
@@ -331,7 +331,7 @@ class Besside(Air):
         line = ["besside-ng"] + params
         self._proc = Popen(line, bufsize=0,
                            cwd=self.tempdir.name,
-                           stderr=DEVNULL, stdin=DEVNULL, stdout=PIPE)
+                           stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
         os.system('stty sane')
 
     @property
@@ -350,15 +350,17 @@ class Besside(Air):
         self._proc.kill()
 
 
-class Reaver(object):
+class Reaver(Air):
     """docstring for Reaver"""
 
-    def __init__(self, iface, bssid, channel=False, pixie=False):
+    def __init__(self, iface, bssid, channel, pixie=False, **kwargs):
         self._iface = iface
         self._bssid = bssid
         self._channel = channel
         self._filename = tempfile.mkstemp()
         self._pixie = pixie
+        super().__init__(**kwargs)
+
     _seek = 0
     _failures = 0
 
