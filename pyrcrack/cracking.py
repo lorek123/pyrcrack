@@ -339,7 +339,7 @@ class Besside(Air):
         """
             Searches for a key in wesside-ng's output to stdout.
         """
-        with open(self.tempdir.name + "/besside.log") as file:
+        with open(os.join(self.tempdir.name, "besside.log")) as file:
             lines = file.readlines()
             if len(lines) < 2:
                 return False
@@ -357,7 +357,7 @@ class Reaver(Air):
         self._iface = iface
         self._bssid = bssid
         self._channel = channel
-        _, self._filename = tempfile.mkstemp()
+        _, self._filename = tempfile.mkstemp(text=True, prefix="xDD")
         self._pixie = pixie
         super().__init__(**kwargs)
 
@@ -371,8 +371,8 @@ class Reaver(Air):
                 "-i", self._iface,
                 "-c", self._channel,
                 "-b", self._bssid,
-                "--no-nacks",
-                "-L", "-w", "-v", "-K 1",
+                "-a",
+                "-K 1",
                 "-o", self._filename,
                 "-s", "notexistingfile"],  # no time for implementing session restoring, let's ignore session files xD
                 stdout=DEVNULL, stderr=DEVNULL)
@@ -382,8 +382,7 @@ class Reaver(Air):
                 "-i", self._iface,
                 "-c", self._channel,
                 "-b", self._bssid,
-                "--no-nacks",
-                "-L", "-w", "-v",
+                "-a",
                 "-o", self._filename],
                 stdout=DEVNULL, stderr=DEVNULL)
 
