@@ -373,7 +373,8 @@ class Reaver(Air):
                 "-b", self._bssid,
                 "--no-nacks",
                 "-L", "-w", "-v", "-K 1",
-                "-o", self._filename],
+                "-o", self._filename,
+                "-s", "notexistingfile"],  # no time for implementing session restoring, let's ignore session files xD
                 stdout=DEVNULL, stderr=DEVNULL)
         else:
             self._proc = Popen([
