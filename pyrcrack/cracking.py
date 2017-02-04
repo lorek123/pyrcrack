@@ -372,9 +372,10 @@ class Reaver(Air):
                 "-c", self._channel,
                 "-b", self._bssid,
                 "-a",
-                "-K 1",
+                "-v",
+                "-K", "1",
                 "-o", self._filename,
-                "-s", "notexistingfile"],  # no time for implementing session restoring, let's ignore session files xD
+                "-s", "notexistingfile"],
                 stdout=DEVNULL, stderr=DEVNULL)
         else:
             self._proc = Popen([
@@ -383,7 +384,8 @@ class Reaver(Air):
                 "-c", self._channel,
                 "-b", self._bssid,
                 "-a",
-                "-o", self._filename],
+                "-o", self._filename,
+                "-s", "notexistingfile"],
                 stdout=DEVNULL, stderr=DEVNULL)
 
     def stop(self):
