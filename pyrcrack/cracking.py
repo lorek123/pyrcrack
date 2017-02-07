@@ -18,7 +18,7 @@ import os
 import re
 import tempfile
 from . import Air, WrongArgument
-from subprocess import run, Popen, DEVNULL, PIPE
+from subprocess import run, Popen, DEVNULL, PIPE, STDOUT
 from contextlib import suppress
 
 
@@ -256,6 +256,7 @@ class Wesside(Air):
             return re.match("KEY=\((.*)\)", data).groups()[0]
         return False
 
+
 class Besside(Air):
     """
         Introduction
@@ -331,7 +332,7 @@ class Besside(Air):
         line = ["besside-ng"] + params
         self._proc = Popen(line, bufsize=0,
                            cwd=self.tempdir.name,
-                           stderr=DEVNULL, stdin=DEVNULL, stdout=DEVNULL)
+                           stderr=STDOUT, stdin=DEVNULL, stdout=PIPE)
         os.system('stty sane')
 
     @property
@@ -376,7 +377,7 @@ class Reaver(Air):
                 "-K", "1",
                 "-o", self._filename,
                 "-s", "notexistingfile"],
-                stdout=DEVNULL, stderr=DEVNULL)
+                stdout=PIPE, stderr=STDOUT)
         else:
             self._proc = Popen([
                 "reaver",
@@ -386,7 +387,7 @@ class Reaver(Air):
                 "-a",
                 "-o", self._filename,
                 "-s", "notexistingfile"],
-                stdout=DEVNULL, stderr=DEVNULL)
+                stdout=PIPE, stderr=STDOUT)
 
     def stop(self):
         self._proc.kill()
