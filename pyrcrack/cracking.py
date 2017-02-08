@@ -385,6 +385,7 @@ class Reaver(Air):
                 "-c", self._channel,
                 "-b", self._bssid,
                 "-a",
+                "-v",
                 "-o", self._filename,
                 "-s", "notexistingfile"],
                 stdout=PIPE, stderr=STDOUT)
