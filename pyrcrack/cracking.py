@@ -340,7 +340,7 @@ class Besside(Air):
         """
             Searches for a key in wesside-ng's output to stdout.
         """
-        with open(os.join(self.tempdir.name, "besside.log")) as file:
+        with open(os.path.join(self.tempdir.name, "besside.log")) as file:
             lines = file.readlines()
             if len(lines) < 2:
                 return False
