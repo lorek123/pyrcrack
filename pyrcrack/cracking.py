@@ -408,8 +408,6 @@ class Reaver(Air):
             if content.find("[!] WPS transaction failed (code: 0x04), re-trying last pin"):
                 self._failures += 1
                 return {"status": "failed " + str(self._failures) + "times"}
-            if content.find("[+] Estimated Remaining time:"):
-                return {"status": "progress"}
             if self._proc.poll():
                 if content.find("[+] WPA PSK: "):
                     key = content.split()[3].strip("'")
@@ -418,6 +416,7 @@ class Reaver(Air):
                         return {"status": "success",
                                 "key": key,
                                 "wps": wps}
+            return {"status": "progress"}
 
 
 class Mdk3(Air):
