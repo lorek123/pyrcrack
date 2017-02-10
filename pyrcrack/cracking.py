@@ -400,12 +400,14 @@ class Reaver(Air):
             reaverlog.seek(self._seek)
             content = reaverlog.read()
             self._seek = reaverlog.tell()
-            if content.find("[!] WARNING: 10 failed connections in a row")!=-1:
+            if content.find("[!] WARNING") != -1:
                 self._failures += 1
-                return {"status": "failed " + str(self._failures) + "times"}
-            if content.find("[!] WPS transaction failed (code: 0x04), re-trying last pin")!=-1:
+                return {"status": "failed " + str(self._failures) + " times"}
+            if content.find("[!] WPS transaction failed (code: 0x0") != -1:
                 self._failures += 1
-                return {"status": "failed " + str(self._failures) + "times"}
+                return {"status": "failed " + str(self._failures) + " times"}
+            if content.find("[+] Pin count advanced") != -1:
+                self._failures = 0
             if self._proc.poll():
                 if content.find("[+] WPA PSK: "):
                     key = content.split()[3].strip("'")
