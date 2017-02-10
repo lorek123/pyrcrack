@@ -403,10 +403,10 @@ class Reaver(Air):
             print(self._failures)
             if content.find("[!] WARNING") != -1:
                 self._failures += 1
-                return {"status": "failed " + str(self._failures) + " times"}
-            if content.find("[!] WPS transaction failed (code: 0x0") != -1:
+            elif content.find("[!] WPS transaction failed (code: 0x0") != -1:
                 self._failures += 1
-                return {"status": "failed " + str(self._failures) + " times"}
+            if self._failures >= 10:
+                return {"status": "failed"}
             if content.find("[+] Pin count advanced") != -1:
                 self._failures = 0
             if self._proc.poll():
