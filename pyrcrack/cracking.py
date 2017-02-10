@@ -410,6 +410,7 @@ class Reaver(Air):
             if content.find("[+] Pin count advanced") != -1:
                 self._failures = 0
             if self._proc.poll():
+                print(content)
                 if content.find("[+] WPA PSK: "):
                     key = content.split()[3].strip("'")
                     if content.find("[+] WPS PIN: "):
