@@ -375,7 +375,7 @@ class Reaver(Air):
                 "-K", "1",
                 "-o", self._filename,
                 "-s", "notexistingfile"],
-                stdout=PIPE, stderr=STDOUT)
+                stdout=DEVNULL, stderr=DEVNULL)
         else:
             self._proc = Popen([
                 "reaver",
@@ -386,7 +386,7 @@ class Reaver(Air):
                 "-v",
                 "-o", self._filename,
                 "-s", "notexistingfile"],
-                stdout=PIPE, stderr=STDOUT)
+                stdout=DEVNULL, stderr=DEVNULL)
 
     def stop(self):
         self._proc.kill()
@@ -400,6 +400,7 @@ class Reaver(Air):
             reaverlog.seek(self._seek)
             content = reaverlog.read()
             self._seek = reaverlog.tell()
+            print(self._failures)
             if content.find("[!] WARNING") != -1:
                 self._failures += 1
                 return {"status": "failed " + str(self._failures) + " times"}
